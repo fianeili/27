@@ -1,101 +1,83 @@
-const ROWS = 5;
-const COLS = 7;
-const GOAL = 1000;
-let score = 0;
-let selectedBall = null;
+const dancers = [
+    { name: "apple", 
+      description: "A fruit with red or green skin and a crisp texture." },
+    { name: "banana", 
+      description: "A long, curved fruit with a yellow skin and soft flesh." },
+    { name: "orange", 
+      description: "A round fruit with a thick orange skin and juicy, sweet flesh." },
+    { name: "grape", 
+      description: "A small, sweet fruit that grows in clusters on vines." },
+    { name: "kiwi", 
+    description: "A small, brown fruit with green flesh and black seeds." }
+];
+let randDancer;
+let guessedLetters;
+let attempts
 
-// Emoji bumbiņu simboli
-const emojiMap = {
-    1: "🟡",
-    2: "🔵",
-    3: "🔴",
-    4: "🟢"
-};
+function startGame() {
+    const randomIndex = Math.floor(Math.random() * dancers.length);
+    randDancer = dancers[randomIndex];
+    guessedLetters = Array(randDancer.name.length).fill("_");
+    attempts = 5;
 
-// Funkcija, kas izveido laukumu
-function createField() {
-    const field = document.getElementById('field');
-    for (let i = 0; i < ROWS; i++) {
-        for (let j = 0; j < COLS; j++) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            cell.dataset.row = i;
-            cell.dataset.col = j;
-            field.appendChild(cell);
-        }
-    }
+    document.getElementById("description").textContent = randDancer.description;
+    displayWord();
+    displayRemainingAttempts();
 }
 
-// Funkcija, kas ģenerē nejaušas bumbiņas
-function generateBalls() {
-    const cells = document.querySelectorAll('.cell');
-    cells.forEach(cell => {
-        if (Math.random() < 0.3) {
-            const ball = document.createElement('div');
-            ball.className = 'ball';
-            ball.dataset.color = Math.floor(Math.random() * 4) + 1; // Katram krāsas tipam ir sava vērtība
-            ball.textContent = emojiMap[ball.dataset.color];
-            ball.addEventListener('click', ballClickHandler);
-            cell.appendChild(ball);
-        }
-    });
+function displayWord() {
+    document.getElementById("wordDisplay").textContent = guessedLetters.join(" ");
 }
 
-// Funkcija, kas apstrādā klikšķus uz bumbiņām
-function ballClickHandler(event) {
-    const ball = event.currentTarget;
-    if (selectedBall) {
-        moveBall(selectedBall, ball.parentNode);
-        selectedBall = null;
+function displayRemainingAttempts() {
+    document.getElementById("remainingAttempts").textContent = "Remaining attempts: " + remainingAttempts;
+}
+
+function checkGuess() {
+    const guess = document.getElementById("guessInput").value.toLowerCase();
+    if (guess === randDancer.name) {
+        document.getElementById("message").textContent = "Congratulations! You guessed the fruit: " + randDancer.name;
+        document.getElementById("guessInput").setAttribute("disabled", true);
     } else {
-        selectedBall = ball;
+        remainingAttempts--;
+        displayRemainingAttempts();
+        if (remainingAttempts === 0) {
+            document.getElementById("message").textContent = "Sorry, you ran out of attempts. The fruit was: " + randDancer.name;
+            document.getElementById("guessInput").setAttribute("disabled", true);
+        } else {
+            document.getElementById("message").textContent = "Incorrect guess! Try again.";
+        }
     }
+    document.getElementById("guessInput").value = "";
 }
 
-// Funkcija, kas pārvieto bumbiņu uz norādīto laukumu šūnu
-function moveBall(ball, cell) {
-    cell.appendChild(ball);
-    checkForMatches();
-    checkForGoal();
-}
+startGame();
 
-// Funkcija, kas pārbauda, vai ir veidojusies trīs vai vairāk vienādu bumbiņu grupa
-function checkForMatches() {
-    // Implementēt šo funkciju
-}
-
-// Funkcija, kas pārbauda, vai ir sasniegts mērķis
-function checkForGoal() {
-    if (score >= GOAL) {
-        // Spēle beidzas
+function currentTime() {
+    var date = new Date();
+    var hour = date.getHours();
+    var min = date.getMinutes();
+    var sec = date.getSeconds();
+    var day = date.getDate();
+    var month = date.getMonth() + 1; // Месяцы начинаются с 0, поэтому добавляем 1
+    var year = date.getFullYear();
+  
+    hour = changeTime(hour);
+    min = changeTime(min);
+    sec = changeTime(sec);
+    document.getElementById("laiks").innerText = hour + " : " + min + " : " + sec + "  " + day + "." + month + "." + year;
+  
+    
+    var t = setTimeout(currentTime, 1000);
+  }
+  
+  function changeTime(k) {
+    if (k < 10) {
+      return "0" + k;
     }
-}
-
-// Funkcija, kas apstrādā klikšķus uz laukuma šūnām
-function cellClickHandler(event) {
-    const cell = event.currentTarget;
-    const selectedCell = selectedBall ? selectedBall.parentNode : null;
-    if (selectedCell && isAdjacent(selectedCell, cell)) {
-        moveBall(selectedBall, cell);
-        selectedBall = null;
+    else {
+      return k;
     }
-}
-
-// Funkcija, kas pārbauda, vai norādītās šūnas ir blakus esošas
-function isAdjacent(cell1, cell2) {
-    const row1 = parseInt(cell1.dataset.row);
-    const col1 = parseInt(cell1.dataset.col);
-    const row2 = parseInt(cell2.dataset.row);
-    const col2 = parseInt(cell2.dataset.col);
-    return Math.abs(row1 - row2) + Math.abs(col1 - col2) === 1;
-}
-
-// Funkcija, kas atgriež lietotāju atpakaļ uz galveno lapu
-function goToMainMenu() {
-    // Implementēt šo funkciju
-}
-
-// Izveidojam laukumu un bumbiņas, un pievienojam klausītājus
-createField();
-generateBalls();
-document.getElementById('mainMenuButton').addEventListener('click', goToMainMenu);
+  }
+  
+  currentTime();
