@@ -7,12 +7,6 @@ header{
   border-radius:20px;
 }
 
-body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-
 .full {
   position: relative;
   overflow: hidden;
@@ -28,11 +22,6 @@ body, html {
 footer{
   background-color: rgb(192, 192, 192);
 }
-.button{
-  background: color #9692c4!important;
-}
-
-
 
 #laiks {
 
